@@ -30,7 +30,6 @@ public class OpenAIServiceImpl implements OpenAIService {
         Map<String, Object> body = Map.of("input", text, "model", "text-embedding-ada-002");
         org.springframework.http.HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(chatbotConfig.getOpenaiKey());
-        headers.set("Content-Type", "application/json");
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
         var response = restTemplate.postForEntity(embeddingURL, request, Map.class);

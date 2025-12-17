@@ -5,16 +5,14 @@ import com.javanc.controlleradvice.customeException.AppException;
 import com.javanc.enums.ErrorCode;
 import com.javanc.model.request.AuthenRequest;
 import com.javanc.model.request.auth.RegisterRequest;
-import com.javanc.model.request.client.AddressRequest;
+import com.javanc.model.request.client.CheckOTPRequest;
 import com.javanc.model.request.client.InformationUserUpdateRequest;
-
-import com.javanc.model.request.client.*;
-
+import com.javanc.model.request.client.OTPRequest;
+import com.javanc.model.request.client.ResetPasswordRequest;
 import com.javanc.model.response.ApiResponseDTO;
 import com.javanc.model.response.AuthenResponse;
 import com.javanc.model.response.ProfileResponse;
 import com.javanc.model.response.client.AddressResponse;
-
 import com.javanc.model.response.client.InformationUserUpdateResponse;
 import com.javanc.model.response.client.NotificationResponse;
 import com.javanc.repository.AddressRepository;
@@ -39,20 +37,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/auth")
@@ -70,17 +64,13 @@ public class AuthenticationController {
     @Autowired
     private AddressRepository addressRepository;
 
-
-
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthenRequest authenRequest) {
         AuthenResponse response = authenService.login(authenRequest);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         log.info("ROLE: " + auth.getAuthorities().toString());
         return ResponseEntity.ok().body(ApiResponseDTO.<AuthenResponse>builder().result(response).build());
-
     }
-
     @PostMapping("/introspect")
     public ResponseEntity<?> introspect(@RequestBody AuthenRequest authenRequest) throws JOSEException, ParseException {
         AuthenResponse response = authenService.introspect(authenRequest);
@@ -116,8 +106,9 @@ public class AuthenticationController {
                         .build()
         );
     }
+
     @PostMapping("/forgot/OTPRequest")
-    public ResponseEntity<?> forgot( @Valid @RequestBody OTPRequest otpRequest , BindingResult result) throws IOException, MessagingException {
+    public ResponseEntity<?> forgot(@Valid @RequestBody OTPRequest otpRequest, BindingResult result) throws IOException, MessagingException {
         if (result.hasErrors()) {
             List<String> errorMessages = result.getFieldErrors() // lấy các field lỗi
                     .stream().map(FieldError::getDefaultMessage) // lấy message của từng field bị lỗi
@@ -133,6 +124,7 @@ public class AuthenticationController {
                 .message("OTP đã được gửi về email")
                 .build());
     }
+
     @PostMapping("/forgot/checkOTP")
     public ResponseEntity<?> checkOTP(@Valid @RequestBody CheckOTPRequest checkOTPRequest, BindingResult result) throws IOException, MessagingException {
         if (result.hasErrors()) {
@@ -146,22 +138,21 @@ public class AuthenticationController {
         }
         boolean valid;
         String kq;
-        try{
+        try {
             valid = authenService.checkForgotPasswordOTP(checkOTPRequest);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        if(valid){
-            kq="OTP hợp lệ";
+        if (valid) {
+            kq = "OTP hợp lệ";
             return ResponseEntity.ok(ApiResponseDTO.builder()
                     .code(200)
                     .result(kq)
                     .build());
 
-        }
-        else{
-            kq="OTP ko hợp lệ";
+        } else {
+            kq = "OTP ko hợp lệ";
             return ResponseEntity.ok(ApiResponseDTO.builder()
                     .code(599)
                     .result(kq)
@@ -170,6 +161,7 @@ public class AuthenticationController {
 
 
     }
+
     @PatchMapping("/forgot/reset")
     public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest, BindingResult result) throws IOException, MessagingException {
         if (result.hasErrors()) {
@@ -181,10 +173,10 @@ public class AuthenticationController {
                     .result(errors)
                     .build());
         }
-        try{
+        try {
 
             authenService.resetPassword(resetPasswordRequest);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         return ResponseEntity.ok(ApiResponseDTO.<String>builder()
@@ -206,12 +198,12 @@ public class AuthenticationController {
         String email = authentication.getName();
         UserEntity user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
         return ResponseEntity.ok().body(ApiResponseDTO.<ProfileResponse>builder().result(ProfileResponse.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .avatar(user.getAvatar())
-                .email(user.getEmail())
-                .status(user.getStatus())
-                .phone(user.getPhone())
+                        .id(user.getId())
+                        .name(user.getName())
+                        .avatar(user.getAvatar())
+                        .email(user.getEmail())
+                        .status(user.getStatus())
+                        .phone(user.getPhone())
                         .notifications(
                                 user.getNotifications().stream()
                                         .sorted(Comparator.comparing(NotificationEntity::getId).reversed())
@@ -223,16 +215,16 @@ public class AuthenticationController {
                                                 .build())
                                         .collect(Collectors.toList())
                         )
-                .addresses(user.getAddresses().stream().map(item -> AddressResponse.builder()
-                        .userAddressId(item.getId())
-                        .addressId(item.getAddress().getId())
-                        .userId(user.getId())
-                        .cityId(item.getAddress().getCityId())
-                        .wardId(item.getAddress().getWardId())
-                        .districtId(item.getAddress().getDistrictId())
-                        .detail(item.getAddress().getDetail())
-                        .isDefault(item.getIsDefault()).build())
-                        .collect(Collectors.toList())).build())
+                        .addresses(user.getAddresses().stream().map(item -> AddressResponse.builder()
+                                        .userAddressId(item.getId())
+                                        .addressId(item.getAddress().getId())
+                                        .userId(user.getId())
+                                        .cityId(item.getAddress().getCityId())
+                                        .wardId(item.getAddress().getWardId())
+                                        .districtId(item.getAddress().getDistrictId())
+                                        .detail(item.getAddress().getDetail())
+                                        .isDefault(item.getIsDefault()).build())
+                                .collect(Collectors.toList())).build())
                 .build());
     }
 
@@ -303,4 +295,5 @@ public class AuthenticationController {
         authenService.logout(authHeader.replace("Bearer ", ""));
         return ResponseEntity.ok().body(ApiResponseDTO.<Void>builder().build());
     }
+
 }

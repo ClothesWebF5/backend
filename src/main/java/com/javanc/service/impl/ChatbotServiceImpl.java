@@ -1,6 +1,7 @@
 package com.javanc.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.javanc.config.ChatbotConfig;
 import com.javanc.model.response.ApiResponseDTO;
 import com.javanc.model.response.client.ChatbotResponse;
 import com.javanc.model.response.client.DetailClientResponse;
@@ -29,6 +30,7 @@ public class ChatbotServiceImpl implements ChatbotService {
     OpenAIService openAIService;
     QdrantService qdrantService;
     ObjectMapper objectMapper;
+    ChatbotConfig chatbotConfig;
 
     @Override
     public ChatbotResponse answer(Map<String, Object> request) {
@@ -40,7 +42,7 @@ public class ChatbotServiceImpl implements ChatbotService {
                     .build();
         }
         List<Float> embedding = openAIService.createEmbedding(question);
-        var results = qdrantService.search("products_collection", embedding, 10);
+        var results = qdrantService.search(chatbotConfig.getQdrantCollectName(), embedding, 10);
         StringBuilder context = new StringBuilder();
         boolean foundFAQ = false;
 

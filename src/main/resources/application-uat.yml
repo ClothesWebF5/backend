@@ -47,7 +47,7 @@ spring:
             user-info-uri: https://graph.facebook.com/me?fields=id,name,email,picture.type(large)
 jwt:
   sign_key: ${SIGN_KEY:69YzD+lBgYPdLvX4kkzhYF9IX2zZ1okqn1SWi3/Us3iIw8bUbu7FzoX2r4RVe+7V}
-  expiry_time_token: 1000000
+  expiry_time_token: 100000000000
   expiry_time_refreshToken: 1000000
 cloud:
   api_key: ${CLOUD_API_KEY}
@@ -64,4 +64,6 @@ openai:
   embedding-url: https://api.openai.com/v1/embeddings
   completion-url: https://api.openai.com/v1/chat/completions
 qdrant:
-  url: ${QDRANT_URL:123456789}
+  url: ${QDRANT_URL:https://6f8536ec-253d-4237-a969-e510a2c8c8e7.us-east4-0.gcp.cloud.qdrant.io}
+  api-key: ${QDRANT_API_KEY:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.zKBnBUlu-HWnkzxA0u1JaNvIpUrsbCTEaUZGiI9HkOk}
+  collection-name: f3_clothes_collection

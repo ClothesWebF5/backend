@@ -1,5 +1,6 @@
 package com.javanc.service.impl;
 
+import com.javanc.config.ChatbotConfig;
 import com.javanc.model.response.client.*;
 import com.javanc.repository.ProductRepository;
 import com.javanc.repository.entity.ProductEntity;
@@ -28,6 +29,7 @@ public class ChatbotTrainningServiceImpl implements ChatbotTrainningService {
     QdrantService qdrantService;
     OpenAIService openAIService;
     ProductRepository productRepository;
+    ChatbotConfig chatbotConfig;
 
 
     final List<String> questions = List.of(
@@ -70,7 +72,7 @@ public class ChatbotTrainningServiceImpl implements ChatbotTrainningService {
             String productInfor = buildInforProductString(item);
             List<Float> embedding = openAIService.createEmbedding(productInfor);
             Long pointId = item.getId();
-            qdrantService.upsertPoint("products_collection", pointId, embedding, payload);
+            qdrantService.upsertPoint(chatbotConfig.getQdrantCollectName(), pointId, embedding, payload);
 
         }
     }
@@ -83,7 +85,7 @@ public class ChatbotTrainningServiceImpl implements ChatbotTrainningService {
             String answer = answers.get(i);
             List<Float> embedding = openAIService.createEmbedding(question);
             String pointId = UUID.randomUUID().toString();
-            qdrantService.upsertPoint("products_collection", pointId, embedding, Map.of("question", question, "answer", answer));
+            qdrantService.upsertPoint(chatbotConfig.getQdrantCollectName(), pointId, embedding, Map.of("question", question, "answer", answer));
         }
     }
 

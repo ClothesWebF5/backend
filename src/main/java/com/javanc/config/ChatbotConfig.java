@@ -21,6 +21,12 @@ public class ChatbotConfig {
     @Value("${qdrant.url}")
     private String qdrantUrl;
 
+    @Value("${qdrant.api-key}")
+    private String qrantApiKey;
+
+    @Value("${qdrant.collection-name}")
+    private String qdrantCollectName;
+
     @Value("${openai.completion-url}")
     private String openaiCompletionUrl;
 

@@ -9,7 +9,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
@@ -58,7 +57,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         params.put("vnp_ReturnUrl", vnpCofig.getVnpReturnUrl());
-        params.put("vnp_IpAddr", clientIpAddress);
+        params.put("vnp_IpAddr", "127.0.0.1");
         if(paymentRequest.getBankCode() != null){
             params.put("vnp_BankCode", paymentRequest.getBankCode());
         }
