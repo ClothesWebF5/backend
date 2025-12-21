@@ -55,9 +55,9 @@ cloud:
   api_secret: ${CLOUD_API_SECRET}
 vnpay:
   pay-url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
-  return-url: http://103.130.212.219/payments/callback
-  tmn-code: 7NB8GD0M
-  secret-key: DUSQCXTEBGA238ARQ2W6FP1WHW9W2P1U
+  return-url: http://localhost:3000/payments/callback
+  tmn-code: L9D0N5TX
+  secret-key: FKXG3TVG5LYVZ7RHHCS94HDG24A1TSZG
   api-url: https://sandbox.vnpayment.vn/merchant_webapi/api/transaction
 openai:
   key: ${OPENAI_KEY:123456789}
