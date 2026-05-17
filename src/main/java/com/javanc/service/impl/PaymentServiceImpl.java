@@ -58,7 +58,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         params.put("vnp_ReturnUrl", vnpCofig.getVnpReturnUrl());
         params.put("vnp_IpAddr", "127.0.0.1");
-        if(paymentRequest.getBankCode() != null){
+        if(paymentRequest.getBankCode() != null && paymentRequest.getBankCode().equals("NCB")){
             params.put("vnp_BankCode", paymentRequest.getBankCode());
         }
 
